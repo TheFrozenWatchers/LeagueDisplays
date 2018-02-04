@@ -1,0 +1,8 @@
+bin
+thirdparty
+*.o
+*.a
+*.so
+*.bin
+leaguedisplays_version.h
+Makefile
