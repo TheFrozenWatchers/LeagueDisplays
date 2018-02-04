@@ -38,11 +38,22 @@ echo -e "CFLAGS = "${cflags[@]}"\n" >> Makefile
 
 echo "[*] Adding predefined rules..."
 
-echo -e "all: leaguedisplays assets\n" >> Makefile
-echo -e "leaguedisplays: bin/leaguedisplays\n" >> Makefile
-echo -e "clean: clean-assets\n\trm *.o\n\trm ./bin/leaguedisplays\n" >> Makefile
-echo -e "strip:\n\tstrip ./bin/leaguedisplays\n" >> Makefile
-echo -e "leaguedisplays_version.h: ./scripts/create_version.sh\n\t./scripts/create_version.sh\n" >> Makefile
+echo -e >> Makefile "
+all: leaguedisplays assets
+
+leaguedisplays: bin/leaguedisplays
+
+clean: clean-assets
+\trm -f *.o
+\trm -f ./bin/leaguedisplays
+
+strip:
+\tstrip ./bin/leaguedisplays
+
+leaguedisplays_version.h: ./scripts/create_version.sh
+\t./scripts/create_version.sh
+
+"
 
 echo "[*] Creating rules for assets..."
 
@@ -91,15 +102,15 @@ echo "[*] Creating rules for source files..."
 sources=($(find src | grep --regex="\.cc$"))
 objects=()
 
-for f in ${sources[@]}; do
+for f in "${sources[@]}"; do
 	object=$(echo $f | sed -r 's/\.cc$/\.o/g' | sed -r 's/src\///g')
 	objects+=("$object")
 
 	rule_header="$object: "
 	rule_header+="$f "
 
-	includes=($(cat $f | grep -oP --regex="#include.*?\".*?\"" | sed -r 's/#include\s+//g' | cut -c 2- | sed -r 's/\"$//g'))
-	for i in ${includes[@]}; do
+	includes=($(cat "$f" | grep -oP --regex="#include.*?\".*?\"" | sed -r 's/#include\s+//g' | cut -c 2- | sed -r 's/\"$//g'))
+	for i in "${includes[@]}"; do
 		if [[ ! $i =~ ^"include/" ]]; then
 			if [[ -f "src/$i" ]]; then
 				i="src/$i"
@@ -109,7 +120,7 @@ for f in ${sources[@]}; do
 		fi
 	done
 
-	echo $rule_header >> Makefile
+	echo "$rule_header" >> Makefile
 	echo -e "\t\$(CXX) \$(CFLAGS) -c $f\n" >> Makefile
 done
 
@@ -117,5 +128,7 @@ objects+=("./thirdparty/cef/libcef_dll_wrapper/libcef_dll_wrapper.a")
 
 echo "[*] Adding linker rule..."
 
-echo "bin/leaguedisplays: "${objects[@]} >> Makefile
-echo -e "\t\$(CXX) \$(CFLAGS) -o ./bin/leaguedisplays "${objects[@]} >> Makefile
+echo -e >> Makefile "
+bin/leaguedisplays: ${objects[@]}
+\t\$(CXX) \$(CFLAGS) -o ./bin/leaguedisplays ${objects[@]}
+"

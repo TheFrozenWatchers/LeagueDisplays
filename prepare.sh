@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function silent_pushd() {
-	pushd $1 > /dev/null
+	pushd "$1" > /dev/null
 }
 
 function silent_popd() {
@@ -11,72 +11,88 @@ function silent_popd() {
 function assert_success() {
 	if [[ $? != 0 ]]; then
 		echo "Terminating."
-		silent_popd
-		exit -1
+		exit 1
 	fi
+}
+
+function usage() {
+	echo "usage: $0 [--cef-path PATH] [--rapidjons-install]"
 }
 
 export _cef_path=""
 export _rapidjson_in_include=false
 
-for arg in $@; do
-	if [[ $arg == "--cef-path="* ]]; then
-		export _cef_path=$(echo $arg | cut -c 12-)
-		if [[ ! -d $_cef_path ]]; then
-			echo "Invalid cef path!"
-			exit -1
-		fi
-	elif [[ $arg == "--rapidjson-installed" ]]; then
-		export _rapidjson_in_include=true
-		if [[ ! -d "/usr/include/rapidjson" ]]; then
-			echo "--rapidjson-installed is defined but cannot find directory in /usr/include!"
-			exit -1
-		fi
-	fi
+OPTS=$(getopt -o "h" -l "help,cef-path:,rapidjson-install" -- "$@")
+if [[ $? != 0 ]]; then
+	echo "Failed to parse options"
+	exit 2
+fi
+eval set -- "$OPTS"
+
+export _cef_path=
+export _rapidjson_in_include=false
+while true; do
+	case "$1" in
+		-h|--help)
+			usage
+			exit
+			shift
+			;;
+		--cef-path)
+			_cef_path=$2
+			shift 2
+			;;
+		--rapidjson-install)
+			_rapidjson_in_include=true
+			if [[ ! -d "/usr/include/rapidjson" ]]; then
+				echo "--rapidjson-installed is defined but cannot find directory in /usr/include!"
+				exit 1
+			fi
+			shift
+			;;
+		--) shift; break ;;
+		*)
+			echo "Error"
+			exit 2
+			;;
+	esac
 done
 
 echo "[*] Creating directories..."
 
-mkdir -p $(pwd)"/bin/"
-#rm -rf $(pwd)"/bin/"
-#mkdir -p $(pwd)"/bin/"
+mkdir -p "$PWD/bin/"
 assert_success
 
-mkdir -p $(pwd)"/thirdparty/"
-#rm -rf $(pwd)"/thirdparty/"
-#mkdir -p $(pwd)"/thirdparty/"
-assert_success
-
-mkdir -p $(pwd)"/thirdparty/cef"
+mkdir -p "$PWD/thirdparty/cef"
 assert_success
 
 if [[ $_cef_path == "" ]]; then
 	echo "[*] Downloading and building CEF api..."
 
-	if [[ ! -f $(pwd)"/thirdparty/cef_binary.tar.bz2" ]]; then
-		wget --quiet --show-progress -O $(pwd)"/thirdparty/cef_binary.tar.bz2" $(printf "http://opensource.spotify.com/cefbuilds/%s" $(curl -s http://opensource.spotify.com/cefbuilds/index.html | grep -oP --regex="cef_binary_3.*?_linux64.tar.bz2" | head -1))
+	if [[ ! -f "$PWD/thirdparty/cef_binary.tar.bz2" ]]; then
+		wget --quiet --show-progress -O "$PWD/thirdparty/cef_binary.tar.bz2" $(printf "http://opensource.spotify.com/cefbuilds/%s" $(curl -s http://opensource.spotify.com/cefbuilds/index.html | grep -oP --regex="cef_binary_3.*?_linux64.tar.bz2" | head -1))
 		assert_success
 	fi
 
-	if [[ ! -d $(pwd)"/thirdparty/cef/include/" ]]; then
+	if [[ ! -d "$PWD/thirdparty/cef/include/" ]]; then
 		echo "[*] Uncompressing..."
 
-		tar -vxjf $(pwd)"/thirdparty/cef_binary.tar.bz2" -C $(pwd)"/thirdparty/cef/"
+		tar -vxjf "$PWD/thirdparty/cef_binary.tar.bz2" -C "$PWD/thirdparty/cef/"
 
-		archivedir=$(pwd)"/thirdparty/cef/"$(ls -1 $(pwd)"/thirdparty/cef/" | head -1)"/"
-		mv $archivedir* $(pwd)"/thirdparty/cef/"
+		archivedir="$PWD/thirdparty/cef/"$(ls -1 "$PWD/thirdparty/cef/" | head -1)"/"
+		mv "$archivedir"* "$PWD/thirdparty/cef/"
 		assert_success
-		rmdir $archivedir
+		rmdir "$archivedir"
 		assert_success
 	fi
 
-	silent_pushd $(pwd)"/thirdparty/cef"
+	silent_pushd "$PWD/thirdparty/cef"
 	assert_success
 
 	cmake . -DCMAKE_BUILD_TYPE="Release"
 	assert_success
 
-	make -j`nproc --all` libcef_dll_wrapper
+	make -j$(nproc --all) libcef_dll_wrapper
 
 	silent_popd
 fi
@@ -84,9 +100,9 @@ fi
 if [[ $_rapidjson_in_include == false ]]; then
 	echo "[*] Downloading rapidjson..."
 
-	silent_pushd $(pwd)"/thirdparty/"
+	silent_pushd "$PWD/thirdparty/"
 
-	if [[ ! -d  rapidjson ]]; then
+	if [[ ! -d rapidjson ]]; then
 		git clone https://github.com/Tencent/rapidjson.git rapidjson
 		assert_success
 	fi
@@ -98,26 +114,26 @@ if [[ $_cef_path == "" ]] || [[ $_rapidjson_in_include == false ]]; then
 	echo "[*] Creating include directory..."
 
 	if [[ $_cef_path == "" ]]; then
-		cp -r $(pwd)"/thirdparty/cef/include/" $(pwd)"/thirdparty/"
+		cp -r "$PWD/thirdparty/cef/include/" "$PWD/thirdparty/"
 	fi
 
 	if [[ $_rapidjson_in_include == false ]]; then
-		cp -r $(pwd)"/thirdparty/rapidjson/include/" $(pwd)"/thirdparty/"
+		cp -r "$PWD/thirdparty/rapidjson/include/" "$PWD/thirdparty/"
 	fi
 fi
 
 echo "[*] Copying CEF resources and libs..."
 
 if [[ $_cef_path == "" ]]; then
-	cp -fr $(pwd)"/thirdparty/cef/Release/"* $(pwd)"/bin/"
-	cp -fr $(pwd)"/thirdparty/cef/Resources/"* $(pwd)"/bin/"
+	cp -fr "$PWD/thirdparty/cef/Release/"* "$PWD/bin/"
+	cp -fr "$PWD/thirdparty/cef/Resources/"* "$PWD/bin/"
 else
-	cp -frs "$_cef_path/Release/"* $(pwd)"/bin/"
-	cp -frs "$_cef_path/Resources/"* $(pwd)"/bin/"
+	cp -frs "$_cef_path/Release/"* "$PWD/bin/"
+	cp -frs "$_cef_path/Resources/"* "$PWD/bin/"
 fi
 
 echo "[*] Creating makefile..."
-sh ./scripts/create_makefile.sh $@
+./scripts/create_makefile.sh "$@"
 
 echo "[*] We are done!"
-echo -e "[*] Use \e[1m\e[94mmake -j`nproc --all`\e[39m\e[21m to compile"
+echo -e "[*] Use \e[1m\e[94mmake -j$(nproc --all)\e[39m\e[21m to compile"
