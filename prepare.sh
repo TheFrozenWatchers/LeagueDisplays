@@ -117,7 +117,7 @@ else
 fi
 
 echo "[*] Creating makefile..."
-./scripts/create_makefile.sh $@
+sh ./scripts/create_makefile.sh $@
 
 echo "[*] We are done!"
 echo -e "[*] Use \e[1m\e[94mmake -j`nproc --all`\e[39m\e[21m to compile"
