@@ -18,7 +18,7 @@ For further clarification, please see the [Legal Jibber Jabber](https://www.riot
 
 ## Compatibility
 
-The project currently supports ***only*** GTK2 on X11/xwayland.
+The project currently ***only*** supports GTK2 on X11/xwayland.
 
 Supported desktop environments:
 
@@ -39,7 +39,7 @@ Setting the wallpaper is generally well supported and has been extensively teste
 
 Screensaver support depends on XScreensaver, and it is reasonably tested albeit still experimental.
 
-Setting the wallpaper of the lock screen setting is not supported yet but it is a planned feature for the near future.
+Setting the wallpaper of the lock screen is not supported yet but that is a planned feature for the future.
 
 Support status (tested with latest packages on Arch):
 
@@ -60,7 +60,7 @@ Support status (tested with latest packages on Arch):
 | Unity         | Needed | Works | Works | Works |
 | i3            | ??? | Works | Works | Works |
 
-Every desktop environment releated code can be found in `crossde.h` and `crossde.cc`.
+Code related to handling each desktop environment can be found in `crossde.h` and `crossde.cc`.
 
 Should you favorite desktop environment be missing from the list, feel free to add support.
 
@@ -105,6 +105,7 @@ As soon as that changes, we will put references to the individual packages here 
 ## Licensing
 
 This version of League Displays is free software licensed under GPL3.
+The GPL3 license is included in the `LICENSE` file.
 
     Copyright (C) 2018 - The Frozen Watchers
 
