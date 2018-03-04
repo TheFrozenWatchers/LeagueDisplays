@@ -61,11 +61,8 @@ int agent_app_main(int argc, char *argv[]) {
 }
 
 int screensaver_app_main(int argc, char *argv[]) {
-    char *argv2[argc];
-    for (int i = 0; i < argc; i++) {
-        argv2[i] = (char*)malloc(strlen(argv[i]) + 1);
-        strcpy(argv2[i], argv[i]);
-    }
+    char **argv2 = (char**)malloc(sizeof(char*) * argc);
+    memcpy(argv2, argv, sizeof(char*) * argc);
 
     LeagueDisplays::Filesystem::ScreensaverInit();
     CefMainArgs main_args(argc, argv);

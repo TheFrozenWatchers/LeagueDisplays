@@ -27,6 +27,9 @@ namespace LeagueDisplays {
             case DesktopEnv::LXDE:
                 INFO("Detected desktop: $$lLXDE");
                 break;
+            case DesktopEnv::LXQT:
+                INFO("Detected desktop: $$lLXQT");
+                break;
             case DesktopEnv::XFCE4:
                 INFO("Detected desktop: $$lXFCE 4");
                 break;
@@ -38,6 +41,9 @@ namespace LeagueDisplays {
                 break;
             case DesktopEnv::MATE:
                 INFO("Detected desktop: $$lMATE");
+                break;
+            case DesktopEnv::I3:
+                INFO("Detected desktop: $$li3");
                 break;
             default:
                 WARN("Unknown desktop environment");
@@ -52,6 +58,9 @@ namespace LeagueDisplays {
         if (CheckIfProcessIsRunning("plasmashell") || CheckIfProcessIsRunning("plasma-desktop"))
             return DesktopEnv::KDE_PLASMA;
 
+        if (CheckIfProcessIsRunning("i3"))
+            return DesktopEnv::I3;
+
         if (CheckIfProcessIsRunning("gnome-panel") && !strcmp(getenv("DESKTOP_SESSION"), "gnome"))
             return DesktopEnv::GNOME;
 
@@ -60,6 +69,9 @@ namespace LeagueDisplays {
 
         if (CheckIfProcessIsRunning("mate-panel") || CheckIfProcessIsRunning("mate-session"))
             return DesktopEnv::MATE;
+
+        if (CheckIfProcessIsRunning("lxqt-session"))
+            return DesktopEnv::LXQT;
 
         if (CheckIfProcessIsRunning("lxpanel"))
             return DesktopEnv::LXDE;
@@ -92,6 +104,9 @@ namespace LeagueDisplays {
             case DesktopEnv::LXDE:
                 cmdstream << "pcmanfm --set-wallpaper \"" << path << "\"";
                 break;
+            case DesktopEnv::LXQT:
+                cmdstream << "pcmanfm-qt --set-wallpaper \"" << path << "\"";
+                break;
             case DesktopEnv::XFCE4:
                 cmdstream << "xfce4-set-wallpaper \"" << path << "\"";
                 break;
@@ -104,6 +119,9 @@ namespace LeagueDisplays {
             case DesktopEnv::MATE:
                 cmdstream << "gsettings set org.mate.caja.preferences background-uri \"file://" << path << "\";";
                 cmdstream << "gsettings set org.mate.background picture-filename \"" << path << "\"";
+                break;
+            case DesktopEnv::I3:
+                cmdstream << "feh --bg-scale \"" << path << "\";";
                 break;
             default:
                 WARN("Unknown desktop environment, using GNOMEShell\n");

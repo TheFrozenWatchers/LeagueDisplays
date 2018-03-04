@@ -31,7 +31,9 @@ Supported desktop environments:
  * MATE
  * XFCE 4
  * LXDE
+ * LXQT
  * Unity
+ * i3
 
 Setting the wallpaper is generally well supported and has been extensively tested.
 
@@ -43,18 +45,20 @@ Support status (tested with latest packages on Arch):
 
 | Desktop environment | AppIndicator | Agent | App | Screensaver |
 |---------------------|----------------------|-------|-----|-------------|
-| Deepin       | Optional | Works | Works | Works |
-| KDE          | Optional | Works | Crashes with `locale::facet::_S_create_c_locale name not valid` | Works |
-| Openbox      | Optional | Works (no icon because there is no status bar / taskbar here) | Works | Works |
-| KDE/Openbox  | Optional | Works | Crashes with `locale::facet::_S_create_c_locale name not valid` | Works |
+| Deepin        | Optional | Works | Works | Works |
+| KDE           | Optional | Works | Crashes with `locale::facet::_S_create_c_locale name not valid` | Works |
+| Openbox       | Optional | Works (no icon because there is no status bar / taskbar here) | Works | Works |
+| KDE/Openbox   | Optional | Works | Crashes with `locale::facet::_S_create_c_locale name not valid` | Works |
 | GNOME classic | ??? | Works, but no icon | Works | Works |
-| GNOME        | ??? | Works, but no icon | Works | Works |
-| Budgie       | Optional | Works | Works | Works |
-| Cinnamon     | Optional | Works | Works | Works |
-| Mate         | Optional | Works | Works | Works |
-| XFCE 4       | Needed | Works | Works | Works |
-| LXDE         | Optional | Works | Works | Works |
-| Unity        | Needed | Works | Works | Works |
+| GNOME         | ??? | Works, but no icon | Works | Works |
+| Budgie        | Optional | Works | Works | Works |
+| Cinnamon      | Optional | Works | Works | Works |
+| Mate          | Optional | Works | Works | Works |
+| XFCE 4        | Needed | Works | Works | Works |
+| LXDE          | Optional | Works | Works | Works |
+| LXQT          | Breaks icon if used | Works | Works | Works |
+| Unity         | Needed | Works | Works | Works |
+| i3            | ??? | Works | Works | Works |
 
 Every desktop environment releated code can be found in `crossde.h` and `crossde.cc`.
 

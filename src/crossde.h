@@ -14,8 +14,10 @@ namespace LeagueDisplays {
         XFCE4,
         MATE,
         LXDE,
+        LXQT,
         CINNAMON,
         UNITY,
+        I3,
         UNKNOWN = 0xFF
     };
 
