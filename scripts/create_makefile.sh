@@ -99,11 +99,13 @@ echo "" >> Makefile
 
 echo "[*] Creating rules for source files..."
 
-sources=($(find src | grep --regex="\.cc$"))
+sources=($(find src | grep --regex="log\.cc$"))
+sources+=($(find src | grep --regex="\.cc$"))
 objects=()
 
 for f in "${sources[@]}"; do
 	object=$(echo $f | sed -r 's/\.cc$/\.o/g' | sed -r 's/src\///g')
+	if [[ $(echo ${objects[@]} | grep $object) != "" ]]; then continue; fi
 	objects+=("$object")
 
 	rule_header="$object: "
