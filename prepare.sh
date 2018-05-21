@@ -132,6 +132,9 @@ else
 	cp -frs "$_cef_path/Resources/"* "$PWD/bin/"
 fi
 
+find "$PWD/bin/" -type f -name "*.so" -exec strip {} +
+strip "$PWD/bin/chrome-sandbox"
+
 echo "[*] Creating makefile..."
 ./scripts/create_makefile.sh "$@"
 
