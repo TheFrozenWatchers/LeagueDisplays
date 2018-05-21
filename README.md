@@ -16,6 +16,12 @@ For further clarification, please see the [Legal Jibber Jabber](https://www.riot
 
 <img src="https://i.imgur.com/VbqbvRa.gif" width="350px">
 
+## What is next?
+
+<img src="https://i.imgur.com/bRZmabH.jpg" width="350px">
+
+Fixed.
+
 ## Compatibility
 
 The project currently ***only*** supports GTK2 on X11/xwayland.
@@ -98,9 +104,9 @@ If you are a package maintainer for a GNU/Linux distribution, we love you!
 
 Please, get in touch (via the issue tracker) and lets make sure that this project is widely and **easily** available for users.
 
-At this stage, we have not packaged the software for any distribution.
+Already existing packages:
 
-As soon as that changes, we will put references to the individual packages here for ease of use.
+Archlinux - [leaguedisplays_git in AUR](https://aur.archlinux.org/packages/leaguedisplays-git/)
 
 ## Licensing
 
