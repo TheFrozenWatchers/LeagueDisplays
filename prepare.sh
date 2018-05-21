@@ -70,7 +70,7 @@ if [[ $_cef_path == "" ]]; then
 	echo "[*] Downloading and building CEF api..."
 
 	if [[ ! -f "$PWD/thirdparty/cef_binary.tar.bz2" ]]; then
-		wget --quiet --show-progress -O "$PWD/thirdparty/cef_binary.tar.bz2" $(printf "http://opensource.spotify.com/cefbuilds/%s" $(curl -s http://opensource.spotify.com/cefbuilds/index.html | grep -oP --regex="cef_binary_3.*?_linux64.tar.bz2" | head -1))
+		wget --quiet --show-progress -O "$PWD/thirdparty/cef_binary.tar.bz2" $(printf "http://opensource.spotify.com/cefbuilds/%s" $(curl -s http://opensource.spotify.com/cefbuilds/index.html | grep -oP --regex="cef_binary_3.*?_linux64_minimal.tar.bz2" | head -1))
 		assert_success
 	fi
 
