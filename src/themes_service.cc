@@ -221,6 +221,7 @@ namespace LeagueDisplays {
     }
 
     bool AppConfig::ModifyOption(const std::string& fnv_name, const rapidjson::Value& value, const ConfigType type) {
+        DEBUG("ModifyOption(%s)", fnv_name.c_str());
         return AppConfig::ModifyOption(fnvHash(fnv_name.c_str()), value, type);
     }
 
@@ -239,6 +240,7 @@ namespace LeagueDisplays {
                 _LD_AC_CASE_GENERAL_INT64  ( openConfigTimestamp            );
                 _LD_AC_CASE_GENERAL_INT64  ( newestContentTimestamp         );
                 _LD_AC_CASE_GENERAL_STRING ( locale                         );
+                _LD_AC_CASE_GENERAL_BOOL   ( crop_images                    );
                 _LD_AC_CASE_GENERAL_INT64  ( savePlaylistTimestamp          );
 
                 default:
@@ -472,11 +474,15 @@ namespace LeagueDisplays {
                                 AppConfig* cfg = AppConfig::Acquire();
                                 cfg->LoadPlaylist();
                                 AppConfig::Release();
+                                mErrorCode = 1200;
+                                callback->Continue();
+                                return true;
                             }
-                            break;
                         case fnvHashConst("PUT:activation"):
                             UpdateScreensaverStuff();
-                            break;
+                            mErrorCode = 1200;
+                            callback->Continue();
+                            return true;
                         default:
                             WARN("Unhandled call %08lx", call);
                             break;
@@ -508,6 +514,10 @@ namespace LeagueDisplays {
                                 }
 
                                 AppConfig::Release();
+
+                                mErrorCode = 1200;
+                                callback->Continue();
+                                return true;
                             } else {
                                 WARN("partial wallpaper/PutSettings is not implemented yet!");
                             }
@@ -518,7 +528,10 @@ namespace LeagueDisplays {
                             AppConfig* cfg = AppConfig::Acquire();
                             cfg->LoadPlaylist();
                             AppConfig::Release();
-                            break;
+
+                            mErrorCode = 1200;
+                            callback->Continue();
+                            return true;
                         }
                         default:
                             WARN("Unhandled call %08lx", call);
@@ -561,11 +574,18 @@ namespace LeagueDisplays {
         }
 
         void ThemesResourceHandler::GetResponseHeaders(CefRefPtr<CefResponse> response, int64& response_length, CefString& redirectUrl) {
-            response->SetStatus(mErrorCode);
-            mStream.seekp(0, std::ios::end);
-            response_length = mStream.tellp();
-            response_length--;
-            mStream.seekp(0);
+
+            if (mErrorCode > 1000) {
+                response->SetStatus(mErrorCode - 1000);
+                response_length = 0;
+            } else {
+                response->SetStatus(mErrorCode);
+                mStream.seekp(0, std::ios::end);
+                response_length = mStream.tellp();
+                response_length--;
+                mStream.seekp(0);
+            }
+
             DEBUG("Code: %d, Response length: %d", mErrorCode, response_length);
         }
 

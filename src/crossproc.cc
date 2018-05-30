@@ -1,6 +1,5 @@
 
 #include "crossproc.h"
-#include "log.h"
 
 #ifdef LOGGING_SOURCE
 #undef LOGGING_SOURCE

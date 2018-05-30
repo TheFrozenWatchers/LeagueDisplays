@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include "log.h"
+
 #include <pthread.h>
 #include <errno.h>
 #include <fcntl.h>
@@ -31,22 +33,22 @@ namespace LeagueDisplays {
                 bool nowCreated = false;
 
                 if (errno == ENOENT) {
-                    printf("Looks like the object does not exist yet\n");
+                    DEBUG("Looks like the object does not exist yet\n");
                     mSharedMemoryObject = shm_open(name, O_RDWR | O_CREAT, 0660);
                     nowCreated = true;
                 }
 
                 if (errno != 0 && mSharedMemoryObject == -1) {
-                    printf("Could not create shared memory error=%d\n", errno);
+                    ERROR("Could not create shared memory error=%d\n", errno);
                     return;
                 }
 
                 mIsCreated = true;
 
                 if (nowCreated)
-                    printf("Created shared memory space called %s\n", name);
+                    INFO("Created shared memory space called %s\n", name);
                 else
-                    printf("Opened shared memory space called %s\n", name);
+                    INFO("Opened shared memory space called %s\n", name);
 
                 if (mSharedMemoryObject == -1) {
                     perror("shm_open");
@@ -67,7 +69,7 @@ namespace LeagueDisplays {
                 }
 
                 if (nowCreated) {
-                    printf("filling object with zeros [p=%p,n=%d]\n", addr, sizeof(T) + extra_alloc + 1);
+                    DEBUG("filling object with zeros [p=%p,n=%d]\n", addr, sizeof(T) + extra_alloc + 1);
                     memset(addr, 0, sizeof(T) + extra_alloc + 1);
                 }
 
@@ -76,7 +78,7 @@ namespace LeagueDisplays {
             }
 
             void Destroy() {
-                printf("Destroying shared memory space called %s\n", mName);
+                DEBUG("Destroying shared memory space called %s\n", mName);
                 mIsCreated = false;
 
                 if (munmap((void *)mObject, sizeof(T) + extra_alloc + 1)) {

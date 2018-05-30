@@ -53,6 +53,7 @@ namespace LeagueDisplays {
         int64_t     openConfigTimestamp;
         int64_t     newestContentTimestamp;
         uint32_t    locale;
+        bool        crop_images;
         int64_t     savePlaylistTimestamp;
 
         // Wallpaper settings:
